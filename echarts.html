@@ -83,6 +83,19 @@
                     }]
                })
            }
+
+           //对事件进行监听
+           window.addEventListener('resize',() => {
+                 console.log('进行必要的监控');
+                //对每个拖拽圆点重新计算位置，并使用setOption 进行更新
+                myChart.setOption({
+                     graphic: echarts.util.map(data,function(item,dataIndex){
+                           return {
+                               position: myChart.convertToPixel('grid',item)
+                           }
+                     })
+                })
+           })
    	  	  //处理点击事件并且跳转到相应的百度所搜页面
    	  	  myChart.on('click', (params) => {
    	  	  	    console.log('进行了点击事件');
