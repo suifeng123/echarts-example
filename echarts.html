@@ -12,20 +12,77 @@
    	  	  //基于准备好的dom 初始化echart实例 -->
    	  	  var myChart = echarts.init(document.getElementById('main'));
 
-   	  	  //指定图表的配置项和数据
-   	  	  var option = {
-   	  	  	xAxis: {
-   	  	  		data: ['衬衫','羊毛衫','雪纺衫','裤子','高跟鞋','袜子']
-   	  	  	},
-   	  	  	yAxis: {},
-   	  	  	series: [{
-   	  	  		name: '销量',
-   	  	  		type: 'bar',
-   	  	  		data: [5,20,36,10,20]
-   	  	  	}]
-   	  	  };
-   	  	  //使用刚指定的配置项和数据显示图表
-   	  	  myChart.setOption(option);
+           var symbolSize = 20;
+
+           //这个data变量在这里单独声明，
+           var data = [[15, 0], [-50, 10], [-56.5, 20], [-46.5, 30], [-22.1, 40]];
+
+           myChart.setOption({
+               xAxis:{
+                   min: -100,
+                   max: 80,
+                   axisLine: {onZero: false}
+               },
+               yAxis: {
+                  min: -30,
+                  max: 60,
+                  type: 'value',
+                  axisLine:{ 
+                     onZero: false 
+                  }
+               },
+               series:[
+                    {
+                      id: 'a',
+                      type: 'line',
+                      smooth: true,
+                      symbolSize: symbolSize,
+                      data: data
+                    }
+               ]
+           });
+
+           myChart.setOption({
+                //声明一个graphic component,里面有若干个type 为 'circle' 的grap element
+                //这里使用了echarts.util.map 这个帮助方法  器行为
+                graphic: echarts.util.map(data,function(dataItem,dataIndex){
+                      return {
+                           //'circle' 表示这个graphic element 的类型是圆点
+                           type: 'circle',
+
+                           shape: {
+                              //圆点的半径
+                              r: symbolSize / 2
+                           },
+                           //用transform的方式对圆点进行定位，position: (x,y) 表示将圆点平移到（x,y）的位置
+                           position: myChart.convertToPixel('grid',dataItem),
+
+                           //这个属性让圆点不可见（但是不影响
+                           invisible: true,
+                           //这个属性让圆点可以拖拽
+                           draggable: true,
+                           //把z值设置比较大 表示这个圆点在最上方
+                           z: 100,
+
+                           ondrag: echarts.util.curry(onPointDragging,dataIndex)
+                      };
+                })
+           });
+
+            //拖拽某个圆点的过程不会调用此函数
+            //此函数中会根据拖拽后的新位置，改变data中的值，并使用新的data值，重绘折线图同步于被拖拽的隐藏圆点
+           function onPointDragging(dataIndex){
+               // 这里的data就是文本最初的代码块中的声明的data 在这里会被更新
+               // 这里的this 就是被脱宅的圆点，this.position 就是圆点当前的位置
+               data[dataIndex] = myChart.convertFromPixel('grid',this.position);
+               //更新后的data  重绘折线图
+               myChart.setOption({
+                    series: [{
+                        id:'a',
+                        data: data
+                    }]
+               })
+           }
    	  	  //处理点击事件并且跳转到相应的百度所搜页面
    	  	  myChart.on('click', (params) => {
    	  	  	    console.log('进行了点击事件');
