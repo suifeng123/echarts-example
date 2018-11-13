@@ -6,7 +6,36 @@
 </head>
 <body>
    <div id="app">
-   	   <input placeholder="please enter something">
+   	   <!-- 监听事件  -->
+   	   <input placeholder="please enter something"
+         @mousedown="handleDown"
+         @mouseleave="handleLeave"
+   	   />
+
+   	   <!--相对于事件进行必要的显示-->
+   	   <ul v-show="show">
+   	   	<li>Java</li>
+   	   	<li>JavaScript</li>
+   	   	<li>Python></li>
+   	   </ul>
    </div>
+   <script type="text/javascript">
+   	  var app = new Vue({
+   	  	el: '#app',
+   	  	data:{
+   	  		show: false
+   	  	},
+   	  	methods:{
+   	  		handleDown(){
+   	  			this.show = true;
+   	  		},
+   	  		handleLeave(){
+   	  			
+   	  			this.show = false;
+   	  		}
+   	  	}
+   	  })
+
+   </script>
 </body>
 </html>
